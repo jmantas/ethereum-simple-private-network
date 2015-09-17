@@ -1,6 +1,11 @@
 #!/bin/sh
 
-. ./parameters.conf
+DATAROOT=~/eth-data-dir/
+NETID=99999
+PORT=177
+RPCPORT=188
+RPCADDRESS=127.0.0.1
+GETH=`which geth`
 
 
 checkDir() {
