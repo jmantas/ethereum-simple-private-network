@@ -75,8 +75,8 @@ bootupNode() {
 
 	${GETH} --nat none --nodiscover \
 	--datadir=${DATAROOT}/${NETID}/${NODEID} --networkid ${NETID} -verbosity 6 \
-	--port ${PORT}${NODEID} --rpc --rpcaddr ${RPCADDRESS} \
-	--rpcport ${RPCPORT}${NODEID} console 2>> ${DATAROOT}/${NETID}/${NODEID}.log
+	--port ${PORT}${NODEID} --rpc --rpcaddr ${RPCADDRESS} 
+    --rpcport ${RPCPORT}${NODEID} console 2>> ${DATAROOT}/${NETID}/${NODEID}.log
 
 }
 
