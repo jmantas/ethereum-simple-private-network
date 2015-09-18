@@ -9,31 +9,58 @@ GETH=`which geth`
 
 
 checkDir() {
+
 	NODEID=$1
 	if [ ! -d "${DATAROOT}/${NETID}/${NODEID}" ] && [ $2 = '4init' ]
 	then
+    
+        echo ""
 		echo "Creating data diractory ${DATAROOT}/${NETID}/${NODEID}"
+        echo ""
+
 		mkdir -p ${DATAROOT}/${NETID}/${NODEID}
 	
 	elif [ ! -d "${DATAROOT}/${NETID}/${NODEID}" ] && [ $2 = '4bootup' ]
 	then
+
+        echo ""
 		echo "Node does not exists. Need to run: ./eth-spn.sh init $1"
-		exit 1	
+        echo ""
+    
+		exit 1
+
+	elif [ -d "${DATAROOT}/${NETID}/${NODEID}" ] && [ $2 = '4init' ]
+    then
+
+        echo ""
+        echo "Node already exists, no need to initialize"
+        echo ""
+
+        exit 1
 
 	fi
-
 
 }
 
 initNode() {
+
 	NODEID=$1
 	checkDir ${NODEID} 4init
+    
+    echo ""
 	echo "Initializing node $1 with private genesis block"
+    
+    echo ""
+    echo "Creating new account"
+    echo ""
+	${GETH} --datadir=${DATAROOT}/${NETID}/${NODEID} \
+    --networkid ${NETID} -verbosity 6 account new 
 
-	${GETH} --genesis ./genesis-private.json --nat none --nodiscover --maxpeers 1 \
-	--datadir=${DATAROOT}/${NETID}/${NODEID} --networkid ${NETID} -verbosity 6 \
-	--port ${PORT}${NODEID} --rpcaddr ${RPCADDRESS} --rpcport ${RPCPORT}${NODEID} \
-	console 2>> ${DATAROOT}/${NETID}/${NODEID}.log
+    echo ""
+    echo "Importing genesis block and starting initial node"
+    echo ""
+	${GETH} --genesis ./genesis-private.json --nat none --nodiscover \
+    --datadir=${DATAROOT}/${NETID}/${NODEID} --networkid ${NETID} -verbosity 6 
 
 }
 
@@ -41,9 +68,12 @@ initNode() {
 bootupNode() {
 	NODEID=$1
 	checkDir ${NODEID} 4bootup
+    
+    echo ""
 	echo "Booting up node $1 ..."
+    echo ""
 
-	${GETH} --nat none --nodiscover --maxpeers 1 \
+	${GETH} --nat none --nodiscover \
 	--datadir=${DATAROOT}/${NETID}/${NODEID} --networkid ${NETID} -verbosity 6 \
 	--port ${PORT}${NODEID} --rpc --rpcaddr ${RPCADDRESS} \
 	--rpcport ${RPCPORT}${NODEID} console 2>> ${DATAROOT}/${NETID}/${NODEID}.log
