@@ -10,26 +10,26 @@ GETH=`which geth`
 
 checkDir() {
 
-	NODEID=$1
-	if [ ! -d "${DATAROOT}/${NETID}/${NODEID}" ] && [ $2 = '4init' ]
-	then
+    NODEID=$1
+    if [ ! -d "${DATAROOT}/${NETID}/${NODEID}" ] && [ $2 = '4init' ]
+    then
     
         echo ""
-		echo "Creating data diractory ${DATAROOT}/${NETID}/${NODEID}"
+        echo "Creating data diractory ${DATAROOT}/${NETID}/${NODEID}"
         echo ""
 
-		mkdir -p ${DATAROOT}/${NETID}/${NODEID}
-	
-	elif [ ! -d "${DATAROOT}/${NETID}/${NODEID}" ] && [ $2 = '4bootup' ]
-	then
+        mkdir -p ${DATAROOT}/${NETID}/${NODEID}
+    
+    elif [ ! -d "${DATAROOT}/${NETID}/${NODEID}" ] && [ $2 = '4bootup' ]
+    then
 
         echo ""
-		echo "Node does not exists. Need to run: ./eth-spn.sh init $1"
+        echo "Node does not exists. Need to run: ./eth-spn.sh init $1"
         echo ""
     
-		exit 1
+        exit 1
 
-	elif [ -d "${DATAROOT}/${NETID}/${NODEID}" ] && [ $2 = '4init' ]
+    elif [ -d "${DATAROOT}/${NETID}/${NODEID}" ] && [ $2 = '4init' ]
     then
 
         echo ""
@@ -38,54 +38,54 @@ checkDir() {
 
         exit 1
 
-	fi
+    fi
 
 }
 
 initNode() {
 
-	NODEID=$1
-	checkDir ${NODEID} 4init
+    NODEID=$1
+    checkDir ${NODEID} 4init
     
     echo ""
-	echo "Initializing node $1 with private genesis block"
+    echo "Initializing node $1 with private genesis block"
     
     echo ""
     echo "Creating new account"
     echo ""
-	${GETH} --datadir=${DATAROOT}/${NETID}/${NODEID} \
+    ${GETH} --datadir=${DATAROOT}/${NETID}/${NODEID} \
     --networkid ${NETID} -verbosity 6 account new 
 
     echo ""
     echo "Importing genesis block and starting initial node"
     echo ""
-	${GETH} --genesis ./genesis-private.json --nat none --nodiscover \
+    ${GETH} --genesis ./genesis-private.json --nat none --nodiscover \
     --datadir=${DATAROOT}/${NETID}/${NODEID} --networkid ${NETID} -verbosity 6 
 
 }
 
 
 bootupNode() {
-	NODEID=$1
-	checkDir ${NODEID} 4bootup
+    NODEID=$1
+    checkDir ${NODEID} 4bootup
     
     echo ""
-	echo "Booting up node $1 ..."
+    echo "Booting up node $1 ..."
     echo ""
 
-	${GETH} --nat none --nodiscover \
-	--datadir=${DATAROOT}/${NETID}/${NODEID} --networkid ${NETID} -verbosity 6 \
-	--port ${PORT}${NODEID} --rpc --rpcaddr ${RPCADDRESS} \
-	--rpcport ${RPCPORT}${NODEID} console 2>> ${DATAROOT}/${NETID}/${NODEID}.log
+    ${GETH} --nat none --nodiscover \
+    --datadir=${DATAROOT}/${NETID}/${NODEID} --networkid ${NETID} -verbosity 6 \
+    --port ${PORT}${NODEID} --rpc --rpcaddr ${RPCADDRESS} 
+    --rpcport ${RPCPORT}${NODEID} console 2>> ${DATAROOT}/${NETID}/${NODEID}.log
 
 }
 
 case "$1" in
         init)
-		initNode $2
+        initNode $2
                 ;;
         up)
-		bootupNode $2
+        bootupNode $2
                 ;;
         *)
         echo "Usage: $0 [ init | up ] [ < node id > ]"
