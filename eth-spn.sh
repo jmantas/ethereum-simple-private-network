@@ -1,7 +1,7 @@
 #!/bin/sh
 
-DATAROOT=~/eth-data-dir/
 NETID=99999
+DATAROOT=~/eth-data-dir-${NETID}/
 PORT=177
 RPCPORT=188
 RPCADDRESS=127.0.0.1
@@ -11,16 +11,16 @@ GETH=`which geth`
 checkDir() {
 
     NODEID=$1
-    if [ ! -d "${DATAROOT}/${NETID}/${NODEID}" ] && [ $2 = '4init' ]
+    if [ ! -d "${DATAROOT}/${NODEID}" ] && [ $2 = '4init' ]
     then
     
         echo ""
-        echo "Creating data diractory ${DATAROOT}/${NETID}/${NODEID}"
+        echo "Creating data diractory ${DATAROOT}/${NODEID}"
         echo ""
 
-        mkdir -p ${DATAROOT}/${NETID}/${NODEID}
+        mkdir -p ${DATAROOT}/${NODEID}
     
-    elif [ ! -d "${DATAROOT}/${NETID}/${NODEID}" ] && [ $2 = '4bootup' ]
+    elif [ ! -d "${DATAROOT}/${NODEID}" ] && [ $2 = '4bootup' ]
     then
 
         echo ""
@@ -29,7 +29,7 @@ checkDir() {
     
         exit 1
 
-    elif [ -d "${DATAROOT}/${NETID}/${NODEID}" ] && [ $2 = '4init' ]
+    elif [ -d "${DATAROOT}/${NODEID}" ] && [ $2 = '4init' ]
     then
 
         echo ""
@@ -43,7 +43,7 @@ checkDir() {
 }
 
 initNode() {
-
+    
     NODEID=$1
     checkDir ${NODEID} 4init
     
@@ -53,14 +53,14 @@ initNode() {
     echo ""
     echo "Creating new account"
     echo ""
-    ${GETH} --datadir=${DATAROOT}/${NETID}/${NODEID} \
+    ${GETH} --datadir=${DATAROOT}/${NODEID} \
     --networkid ${NETID} -verbosity 6 account new 
 
     echo ""
     echo "Importing genesis block and starting initial node"
     echo ""
     ${GETH} --genesis ./genesis-private.json --nat none --nodiscover \
-    --datadir=${DATAROOT}/${NETID}/${NODEID} --networkid ${NETID} -verbosity 6 
+    --datadir=${DATAROOT}/${NODEID} --networkid ${NETID} -verbosity 6 
 
 }
 
@@ -73,20 +73,20 @@ bootupNode() {
     echo "Booting up node $1 ..."
     echo ""
 
-    ${GETH} --nat none --nodiscover \
-    --datadir=${DATAROOT}/${NETID}/${NODEID} --networkid ${NETID} -verbosity 6 \
-    --port ${PORT}${NODEID} --rpc --rpcaddr ${RPCADDRESS} 
-    --rpcport ${RPCPORT}${NODEID} console 2>> ${DATAROOT}/${NETID}/${NODEID}.log
+    ${GETH} --nat none --nodiscover --vmdebug \
+    --datadir=${DATAROOT}/${NODEID} --networkid ${NETID} -verbosity 6 \
+    --port ${PORT}${NODEID} --rpc --rpcaddr ${RPCADDRESS} \
+    --rpcport ${RPCPORT}${NODEID} console 2>> ${DATAROOT}/${NODEID}.log
 
 }
 
 case "$1" in
         init)
         initNode $2
-                ;;
+        ;;
         up)
         bootupNode $2
-                ;;
+        ;;
         *)
         echo "Usage: $0 [ init | up ] [ < node id > ]"
 RETVAL=$?
