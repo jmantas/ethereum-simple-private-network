@@ -4,6 +4,7 @@ NETID=99999
 DATAROOT=~/eth-data-dir-${NETID}/
 PORT=177
 RPCPORT=188
+PPROFPORT=606
 RPCADDRESS=127.0.0.1
 GETH=`which geth`
 
@@ -59,8 +60,9 @@ initNode() {
     echo ""
     echo "Importing genesis block and starting initial node"
     echo ""
-    ${GETH} --genesis ./genesis-private.json --nat none --nodiscover \
-    --datadir=${DATAROOT}/${NODEID} --networkid ${NETID} -verbosity 6 
+    ${GETH} --nat none --nodiscover \
+    --datadir=${DATAROOT}/${NODEID} --networkid ${NETID} -verbosity 6 \
+    init ./genesis-private.json 
 
 }
 
@@ -72,11 +74,13 @@ bootupNode() {
     echo ""
     echo "Booting up node $1 ..."
     echo ""
-
-    ${GETH} --nat none --nodiscover --vmdebug \
-    --datadir=${DATAROOT}/${NODEID} --networkid ${NETID} -verbosity 6 \
-    --port ${PORT}${NODEID} --rpc --rpcaddr ${RPCADDRESS} \
-    --rpcport ${RPCPORT}${NODEID} console 2>> ${DATAROOT}/${NODEID}.log
+    echo ${PPROFPORT}${NODEID}
+    ${GETH} --datadir=${DATAROOT}/${NODEID} \
+    --nat none --nodiscover --networkid ${NETID} -verbosity 6 \
+    --pprof --pprofport ${PPROFPORT}${NODEID} \
+    --port ${PORT}${NODEID} --rpc --rpcaddr ${RPCADDRESS} --rpcport ${RPCPORT}${NODEID} \
+    --mine --minerthreads 1 --extradata "Mined by node:"$1 --gpomin 20 --gasprice 20 \
+    console 2>> ${DATAROOT}/${NODEID}.log
 
 }
 
