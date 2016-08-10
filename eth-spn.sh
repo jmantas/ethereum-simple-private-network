@@ -74,12 +74,11 @@ bootupNode() {
     echo ""
     echo "Booting up node $1 ..."
     echo ""
-    echo ${PPROFPORT}${NODEID}
     ${GETH} --datadir=${DATAROOT}/${NODEID} \
     --nat none --nodiscover --networkid ${NETID} -verbosity 6 \
     --pprof --pprofport ${PPROFPORT}${NODEID} \
     --port ${PORT}${NODEID} --rpc --rpcaddr ${RPCADDRESS} --rpcport ${RPCPORT}${NODEID} \
-    --mine --minerthreads 1 --extradata "Mined by node:"$1 --gpomin 20 --gasprice 20 \
+    --mine --minerthreads 1 --extradata "Mined by node:"$1 \
     console 2>> ${DATAROOT}/${NODEID}.log
 
 }
