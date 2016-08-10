@@ -55,13 +55,13 @@ initNode() {
     echo "Creating new account"
     echo ""
     ${GETH} --datadir=${DATAROOT}/${NODEID} \
-    --networkid ${NETID} -verbosity 6 account new 
+    --networkid ${NETID} --verbosity 6 account new 
 
     echo ""
     echo "Importing genesis block and starting initial node"
     echo ""
     ${GETH} --nat none --nodiscover \
-    --datadir=${DATAROOT}/${NODEID} --networkid ${NETID} -verbosity 6 \
+    --datadir=${DATAROOT}/${NODEID} --networkid ${NETID} --verbosity 6 \
     init ./genesis-private.json 
 
 }
@@ -74,13 +74,13 @@ bootupNode() {
     echo ""
     echo "Booting up node $1 ..."
     echo ""
-    ${GETH} --datadir=${DATAROOT}/${NODEID} \
-    --nat none --nodiscover --networkid ${NETID} -verbosity 6 \
+   ${GETH} --datadir=${DATAROOT}/${NODEID} \
+    --nat none --nodiscover --networkid ${NETID} \
+    --verbosity 6 \
     --pprof --pprofport ${PPROFPORT}${NODEID} \
     --port ${PORT}${NODEID} --rpc --rpcaddr ${RPCADDRESS} --rpcport ${RPCPORT}${NODEID} \
     --mine --minerthreads 1 --extradata "Mined by node:"$1 \
-    console 2>> ${DATAROOT}/${NODEID}.log
-
+    --shh console 2>> ${DATAROOT}/${NODEID}.log
 }
 
 case "$1" in
