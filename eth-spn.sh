@@ -1,15 +1,27 @@
 #!/bin/sh
 
+
+export RUST_BACKTRACE=1
+#RUST_LOG=myprog=4
+export RUST_LOG=debug
+
 NETID=99999
-DATAROOT=~/eth-data-dir-${NETID}/
+NETIDHEX=`printf %x ${NETID}`
+DATAROOT=~/eth-data-dir-${NETID}
 PORT=177
 RPCPORT=188
 PPROFPORT=606
 RPCADDRESS=127.0.0.1
+
 GETH=`which geth`
 GETHVERSION=`${GETH} version`
 PARITY=`which parity`
 PARITYVERSION=`${PARITY} --version`
+CP=`which cp`
+SED=`which sed`
+
+
+
 
 checkDir() {
 
@@ -69,30 +81,45 @@ initNodeGeth() {
 }
 
 
+generateParityGenesisJSON() {
+
+    ${CP} -p ./genesis-private-parity-null.json ./genesis-private-parity-${NETID}.json
+    ${SED} -i -e "s/REPLACEMEWITHCORRECTNETIDINHEX/${NETIDHEX}/g" ./genesis-private-parity-${NETID}.json
+
+}
+
+
 initNodeParity() {
 
-    export RUST_BACKTRACE=1 
+ 
     NODEID=$1
     checkDir ${NODEID} 4init
     
     echo ""
     echo "Initializing PARITY node $1 with private genesis block"
+    echo ""
+    echo "Creating new account, importing genesis block"
+    echo ""
     
-    echo ""
-    echo "Creating new account"
-    echo ""
-    ${PARITY} --db-path=${DATAROOT}/${NODEID} \
-    --network-id ${NETID} account new 
+    ${PARITY} --db-path ${DATAROOT}/${NODEID} --keys-path ${DATAROOT}/${NODEID}/keys \
+    --dapps-path ${DATAROOT}/${NODEID}/dapps --signer-path ${DATAROOT}/${NODEID}/signer \
+    --network-id ${NETID} --logging debug --chain ./genesis-private-parity-${NETID}.json account new  
 
-    echo ""
-    echo "Importing genesis block and starting initial node"
-    echo ""
-    ${PARITY} --nat none --no-discovery \
-    --db-path=${DATAROOT}/${NODEID} --network-id ${NETID} \
-    --chain ./genesis-private-parity.json
 
 }
 
+
+
+bootupNodeParity() {
+
+    NODEID=$1
+    checkDir ${NODEID} 4bootup
+    
+    echo ""
+    echo "Booting up node $1 ..."
+    echo ""
+    
+}
 
 
 bootupNodeGeth() {
@@ -118,6 +145,7 @@ case "$1" in
         initNodeGeth $2
         ;;
         initparity)
+        generateParityGenesisJSON
         initNodeParity $2
         ;;
         upgeth)
