@@ -11,6 +11,7 @@ DATAROOT=~/eth-data-dir-${NETID}
 PORT=177
 RPCPORT=188
 PPROFPORT=606
+DAPPSPORT=199
 RPCADDRESS=127.0.0.1
 
 GETH=`which geth`
@@ -116,8 +117,18 @@ bootupNodeParity() {
     checkDir ${NODEID} 4bootup
     
     echo ""
-    echo "Booting up node $1 ..."
+    echo "Booting up PARITY node $1 ..."
     echo ""
+    
+    ${PARITY} --db-path ${DATAROOT}/${NODEID} --keys-path ${DATAROOT}/${NODEID}/keys \
+    --dapps-path ${DATAROOT}/${NODEID}/dapps --signer-path ${DATAROOT}/${NODEID}/signer \
+    --network-id ${NETIDHEX} --nat none --no-discovery \
+    --chain ./genesis-private-parity-${NETID}.json \
+    --ipc-path ${DATAROOT}/${NODEID}/jsonrpc${NETID}.ipc \
+    --port ${PORT}${NODEID} --jsonrpc-port ${RPCPORT}${NODEID} \
+    --bootnodes "enode://eacfadd4295dbbaff3a21e33274de7807fe1c0a1e3921a35c38fc744406d7803529b2db0b4e665d0cc7dce9b89d88d79ff75607f8adf5c03d7249245771ae578@[::]:17701"
+   # --dapps-port ${DAPPSPORT}${NODEID} --dapps-path ${DATAROOT}/${NODEID}/dapps \
+   # --dapps-user "dappuser" --dapps-pass "dapppass"
     
 }
 
@@ -127,9 +138,9 @@ bootupNodeGeth() {
     checkDir ${NODEID} 4bootup
     
     echo ""
-    echo "Booting up node $1 ..."
+    echo "Booting up GETH node $1 ..."
     echo ""
-   ${GETH} --datadir=${DATAROOT}/${NODEID} \
+   ${GETH} --datadir ${DATAROOT}/${NODEID} \
     --nat none --nodiscover --networkid ${NETID} \
     --verbosity 6 \
     --pprof --pprofport ${PPROFPORT}${NODEID} \
