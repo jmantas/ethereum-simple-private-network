@@ -2,10 +2,9 @@
 
 
 export RUST_BACKTRACE=1
-#RUST_LOG=myprog=4
 export RUST_LOG=debug
 
-NETID=99999
+NETID=88888
 NETIDHEX=`printf %x ${NETID}`
 DATAROOT=~/eth-data-dir-${NETID}
 PORT=177
@@ -125,10 +124,7 @@ bootupNodeParity() {
     --network-id ${NETIDHEX} --nat none --no-discovery \
     --chain ./genesis-private-parity-${NETID}.json \
     --ipc-path ${DATAROOT}/${NODEID}/jsonrpc${NETID}.ipc \
-    --port ${PORT}${NODEID} --jsonrpc-port ${RPCPORT}${NODEID} \
-    --bootnodes "enode://eacfadd4295dbbaff3a21e33274de7807fe1c0a1e3921a35c38fc744406d7803529b2db0b4e665d0cc7dce9b89d88d79ff75607f8adf5c03d7249245771ae578@[::]:17701"
-   # --dapps-port ${DAPPSPORT}${NODEID} --dapps-path ${DATAROOT}/${NODEID}/dapps \
-   # --dapps-user "dappuser" --dapps-pass "dapppass"
+    --port ${PORT}${NODEID} --jsonrpc-port ${RPCPORT}${NODEID} 
     
 }
 

@@ -1,7 +1,18 @@
 {
 	"name": "ParityPrivDevNode",
+
+
 	"engine": {
-		"Null": null
+        "Ethash": {
+                  "params": {
+                       "gasLimitBoundDivisor": "0x0400",
+                       "minimumDifficulty": "0x020000",
+                       "difficultyBoundDivisor": "0x8000",
+                       "durationLimit": "0x0d",
+                       "blockReward": "0x4563918244F40000"
+                        }
+                }
+
 	},
 	"params": {
         "accountStartNonce": "0x0",
